@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Outfit</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f3f1ee;
+        --ink: #1c1c1c;
+        --muted: #6b6560;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: system-ui, sans-serif;
+      }
+      header {
+        padding: 28px 24px 8px;
+      }
+      h1 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 650;
+      }
+      section {
+        padding: 8px 24px 28px;
+      }
+      h2 {
+        margin: 16px 0 12px;
+        font-size: 15px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 16px;
+      }
+      figure {
+        margin: 0;
+      }
+      button.card {
+        display: block;
+        width: 100%;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+      }
+      button.card img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 2 / 3;
+        object-fit: cover;
+        background: #e7e2dc;
+        border-radius: 12px;
+      }
+      figcaption {
+        margin-top: 8px;
+        font-size: 14px;
+      }
+      #viewer {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: rgba(0, 0, 0, 0.82);
+      }
+      #viewer.open { display: flex; }
+      #viewer img {
+        max-width: min(100%, 520px);
+        max-height: 100%;
+        border-radius: 8px;
+      }
+      #viewer button.close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        border: 0;
+        border-radius: 999px;
+        padding: 8px 14px;
+        background: #fff;
+        font: inherit;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Outfit</h1>
+    </header>
+    <main id="gallery"></main>
+    <div id="viewer" hidden>
+      <button class="close" type="button">Tutup</button>
+      <img alt="" />
+    </div>
+    <script>
+      const folders = [
+        {
+          name: "Female",
+          images: [
+            ["House_Female 1.png", "House 1"],
+            ["House_Female 2.png", "House 2"],
+            ["Techno_Female.png", "Techno"],
+            ["Techno_Female 2.png", "Techno 2"],
+            ["Techno_Female 3.png", "Techno 3"],
+            ["Trance_Female.png", "Trance"],
+            ["Hip-Hop_Female.png", "Hip-Hop"],
+            ["Drum & Bass_Female.png", "Drum & Bass"]
+          ]
+        },
+        {
+          name: "Male",
+          images: [
+            ["House_Male.png", "House"],
+            ["Techno_Male.png", "Techno"],
+            ["Trance_Male.png", "Trance"],
+            ["Hip-Hop_Male.png", "Hip-Hop"],
+            ["Drum & Bass_Male.png", "Drum & Bass"]
+          ]
+        }
+      ];
+
+      const gallery = document.getElementById("gallery");
+      const viewer = document.getElementById("viewer");
+      const viewerImage = viewer.querySelector("img");
+
+      folders.forEach((folder) => {
+        const section = document.createElement("section");
+        const heading = document.createElement("h2");
+        heading.textContent = folder.name;
+        const grid = document.createElement("div");
+        grid.className = "grid";
+
+        folder.images.forEach(([file, label]) => {
+          const src = "Outfit/" + folder.name + "/" + encodeURIComponent(file);
+          const figure = document.createElement("figure");
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "card";
+          const image = document.createElement("img");
+          image.src = src;
+          image.alt = folder.name + " " + label;
+          const caption = document.createElement("figcaption");
+          caption.textContent = label;
+          button.append(image, caption);
+          button.addEventListener("click", () => {
+            viewerImage.src = src;
+            viewerImage.alt = image.alt;
+            viewer.hidden = false;
+            viewer.classList.add("open");
+          });
+          figure.append(button);
+          grid.append(figure);
+        });
+
+        section.append(heading, grid);
+        gallery.append(section);
+      });
+
+      viewer.querySelector(".close").addEventListener("click", () => {
+        viewer.classList.remove("open");
+        viewer.hidden = true;
+        viewerImage.removeAttribute("src");
+      });
+    </script>
+  </body>
+</html>
