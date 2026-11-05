@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Amild Try-On</title>
+    <script src="https://cdn.jsdelivr.net/npm/deepar@5.6.22/js/deepar.js"></script>
+    <style>
+      html, body {
+        margin: 0;
+        height: 100%;
+        background: #111;
+        color: #fff;
+        font-family: system-ui, sans-serif;
+      }
+      #deepar-div {
+        position: fixed;
+        inset: 0;
+      }
+      #status {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        text-align: center;
+        background: #111;
+        z-index: 2;
+      }
+      #status[hidden] {
+        display: none;
+      }
+      #effects {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 3;
+        display: flex;
+        gap: 8px;
+        padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+        overflow-x: auto;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.65));
+      }
+      #effects button {
+        flex: 0 0 auto;
+        border: 2px solid transparent;
+        border-radius: 999px;
+        padding: 10px 16px;
+        background: rgba(255, 255, 255, 0.16);
+        color: #fff;
+        font: inherit;
+        cursor: pointer;
+      }
+      #effects button.selected {
+        border-color: #fff;
+        background: rgba(255, 255, 255, 0.32);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="deepar-div"></div>
+    <div id="status">Membuka kamera…</div>
+    <div id="effects" hidden></div>
+    <script>
+      const LICENSE_KEY = "e087d736dcb6b21a758f359462aa9d2f7760b9611d33d8c0ed7a20fcf3e7060ed74d075af16a6511";
+      const CDN = "https://cdn.jsdelivr.net/npm/deepar@5.6.22/effects/";
+      const effects = [
+        { src: "Untitled.deepar", label: "Kacamata" },
+        { src: CDN + "aviators", label: "Aviators" }
+      ];
+
+      const statusEl = document.getElementById("status");
+      const effectsEl = document.getElementById("effects");
+
+      (async function () {
+        let deepAR;
+        try {
+          deepAR = await deepar.initialize({
+            licenseKey: LICENSE_KEY,
+            previewElement: document.getElementById("deepar-div"),
+            effect: effects[0].src
+          });
+        } catch (error) {
+          console.error(error);
+          statusEl.textContent = "Kamera atau license ditolak. Pastikan situs dibuka lewat HTTPS, domain-nya terdaftar di DeepAR, lalu izinkan kamera.";
+          return;
+        }
+
+        statusEl.hidden = true;
+        effectsEl.hidden = false;
+
+        effects.forEach((effect, index) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.textContent = effect.label;
+          if (index === 0) button.classList.add("selected");
+          button.addEventListener("click", async () => {
+            effectsEl.querySelectorAll("button").forEach((item) => item.classList.remove("selected"));
+            button.classList.add("selected");
+            await deepAR.switchEffect(effect.src);
+          });
+          effectsEl.appendChild(button);
+        });
+      })();
+    </script>
+  </body>
+</html>
