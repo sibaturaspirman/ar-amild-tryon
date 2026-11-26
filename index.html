@@ -6,19 +6,112 @@
     <title>Amild Try-On</title>
     <script src="https://cdn.jsdelivr.net/npm/deepar@5.6.22/js/deepar.js"></script>
     <style>
+      @font-face {
+        font-family: "FF Good Pro Condensed";
+        src: url("assets/fonts/FFGoodProCond-Medium.woff2") format("woff2");
+        font-weight: 500;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: "FF Good Pro Condensed";
+        src: url("assets/fonts/FFGoodProCond-Bold.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: "FF Good Pro Condensed";
+        src: url("assets/fonts/FFGoodProCond-Ultra.woff2") format("woff2");
+        font-weight: 900;
+        font-style: normal;
+        font-display: swap;
+      }
+      :root {
+        --red: #ff160f;
+        --ink: #000;
+        --muted: #505050;
+        --font: "FF Good Pro Condensed", system-ui, sans-serif;
+      }
+      * { box-sizing: border-box; }
       html, body {
         margin: 0;
         height: 100%;
-        background: #111;
+        background: #000;
         color: #fff;
-        font-family: system-ui, sans-serif;
+        font-family: var(--font);
       }
-      #deepar-div {
+      button { font: inherit; cursor: pointer; }
+      .screen {
         position: fixed;
+        inset: 0;
+        overflow: hidden;
+      }
+      #landing {
+        z-index: 20;
+        background: #000;
+      }
+      #landing .hero-wrap {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+      }
+      #landing .hero {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        /* height: 106.94%; */
+        /* top: -6.94%; */
+        top: 0;
+        object-fit: cover;
+      }
+      #landing .fade {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 180px;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.82) 100%);
+        pointer-events: none;
+      }
+      #landing .start-btn {
+        position: absolute;
+        left: 50%;
+        bottom: calc(88px + env(safe-area-inset-bottom));
+        transform: translateX(-50%);
+        width: min(307px, calc(100% - 68px));
+        height: 48px;
+        border: 1px solid #fff;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        background: linear-gradient(169deg, #b80005 30%, #ff3d37 79%);
+        box-shadow: 6px 6px 20.5px rgba(0, 0, 0, 0.4), inset 0 0 24px 7px #ff2d2d;
+        overflow: hidden;
+      }
+      #landing .start-btn::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: url("assets/ui/pattern-bg.png") center / cover;
+        opacity: 0.35;
+        mix-blend-mode: screen;
+        pointer-events: none;
+      }
+      #landing .start-btn span {
+        position: relative;
+        z-index: 1;
+      }
+      #experience { z-index: 10; }
+      #deepar-div {
+        position: absolute;
         inset: 0;
       }
       #status {
-        position: fixed;
+        position: absolute;
         inset: 0;
         display: flex;
         align-items: center;
@@ -26,85 +119,830 @@
         padding: 24px;
         text-align: center;
         background: #111;
-        z-index: 2;
+        z-index: 5;
+        font-size: 16px;
       }
-      #status[hidden] {
+      #status[hidden] { display: none; }
+      .ui-layer {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 4;
+      }
+      .ui-layer > * { pointer-events: auto; }
+      .top-gradient {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 137px;
+        background: linear-gradient(180deg, #fff 0%, rgba(255, 255, 255, 0) 100%);
+        pointer-events: none;
+      }
+      .toolbar {
+        position: absolute;
+        top: calc(16px + env(safe-area-inset-top));
+        left: 16px;
+        right: 16px;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .icon-btn {
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        backdrop-filter: blur(1.7px);
+        background: rgba(255, 255, 255, 0.5);
+        display: grid;
+        place-items: center;
+      }
+      .icon-btn img {
+        display: block;
+        width: 20px;
+        height: 20px;
+      }
+      #btn-flip img { width: 24px; height: 24px; }
+      .headline {
+        position: absolute;
+        top: calc(48px + env(safe-area-inset-top));
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(303px, calc(100% - 32px));
+        margin: 0;
+        text-align: center;
+        pointer-events: none;
+      }
+      .headline .line-1 {
+        margin: 0;
+        color: var(--muted);
+        font-size: 20px;
+        font-weight: 500;
+        text-transform: uppercase;
+      }
+      .headline .line-2 {
+        margin: 4px 0 0;
+        color: var(--ink);
+        font-size: clamp(26px, 8vw, 36px);
+        font-weight: 900;
+        line-height: 1;
+        text-transform: uppercase;
+      }
+      #face-guide {
+        position: absolute;
+        left: 50%;
+        top: 52%;
+        transform: translate(-50%, -50%);
+        width: min(379px, 96vw);
+        height: auto;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+      }
+      #face-guide[hidden] { display: none; }
+      .choose-label {
+        position: absolute;
+        left: 50%;
+        top: calc(100% - 220px - env(safe-area-inset-bottom));
+        transform: translateX(-50%);
+        margin: 0;
+        color: #fff;
+        font-size: 16px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+      .choose-label[hidden] { display: none; }
+      #variants {
+        position: absolute;
+        left: 50%;
+        top: calc(100% - 165px - env(safe-area-inset-bottom));
+        transform: translateX(-50%);
+        display: flex;
+        gap: 16px;
+        align-items: center;
+      }
+      #variants[hidden] { display: none; }
+      .ui-layer.with-capture .choose-label {
+        top: calc(100% - 236px - env(safe-area-inset-bottom));
+      }
+      .ui-layer.with-capture #variants {
+        top: calc(100% - 208px - env(safe-area-inset-bottom));
+      }
+      #capture-panel {
+        position: absolute;
+        left: 50%;
+        bottom: calc(83px + env(safe-area-inset-bottom));
+        transform: translateX(-50%);
+        width: min(307px, calc(100% - 68px));
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+      #capture-panel[hidden] { display: none; }
+      .btn-capture-figma {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        width: 100%;
+        height: 48px;
+        padding: 0;
+        border: 0;
+        border-top: 1px solid rgba(104, 104, 104, 0);
+        border-bottom: 1px solid rgba(104, 104, 104, 0);
+        color: #fff;
+        font-size: 20px;
+        font-weight: 700;
+        line-height: normal;
+        text-transform: uppercase;
+        background: linear-gradient(
+          90deg,
+          rgba(0, 0, 0, 0) 0%,
+          rgb(0, 0, 0) 25%,
+          rgb(0, 0, 0) 50%,
+          rgb(0, 0, 0) 75%,
+          rgba(0, 0, 0, 0) 100%
+        );
+        overflow: hidden;
+      }
+      #btn-capture:disabled {
+        opacity: 0.65;
+        cursor: wait;
+      }
+      .capture-or {
+        margin: 0;
+        width: 100%;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 700;
+        line-height: normal;
+        text-align: center;
+        text-transform: uppercase;
+      }
+      .capture-icon {
+        position: relative;
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        overflow: hidden;
+      }
+      .capture-icon .capture-icon-frame {
+        display: block;
+        width: 20px;
+        height: 20px;
+      }
+      .capture-icon .capture-icon-dot {
+        position: absolute;
+        top: 25.9%;
+        right: 47.62%;
+        bottom: 54%;
+        left: 32.28%;
+        width: auto;
+        height: auto;
+        max-width: 4px;
+        max-height: 4px;
+      }
+      .btn-figma-download {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        width: 100%;
+        max-width: 307px;
+        height: 48px;
+        padding: 0 32px;
+        border: 1px solid #fff;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 18px;
+        text-transform: uppercase;
+        text-shadow: 0 12px 20px rgba(0, 0, 0, 0.32);
+        background: linear-gradient(169.404deg, #b80005 29.834%, #ff3d37 78.683%);
+        box-shadow: 6px 6px 20.5px rgba(0, 0, 0, 0.4), inset 0 0 24px 7px #ff2d2d;
+        overflow: hidden;
+      }
+      .btn-figma-download::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: url("assets/ui/pattern-bg.png") center / cover;
+        opacity: 0.3;
+        mix-blend-mode: screen;
+        transform: scaleY(-1);
+        pointer-events: none;
+      }
+      .btn-figma-download img {
+        position: relative;
+        z-index: 1;
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+      }
+      .btn-figma-download span {
+        position: relative;
+        z-index: 1;
+      }
+      #capture-countdown {
+        position: absolute;
+        inset: 0;
+        z-index: 12;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+        background: rgba(0, 0, 0, 0.15);
+      }
+      #capture-countdown[hidden] {
         display: none;
       }
-      #effects {
-        position: fixed;
+      #capture-countdown .count {
+        font-size: clamp(104px, 32vw, 152px);
+        font-weight: 900;
+        line-height: 1;
+        color: #fff;
+        text-shadow: 0 8px 40px rgba(0, 0, 0, 0.75);
+        animation: countdown-pop 0.9s ease-out;
+      }
+      @keyframes countdown-pop {
+        0% {
+          transform: scale(1.35);
+          opacity: 0;
+        }
+        18% {
+          opacity: 1;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      #download-popup {
+        position: absolute;
+        inset: 0;
+        z-index: 14;
+        overflow: hidden;
+        background: #000;
+      }
+      #download-popup[hidden] {
+        display: none;
+      }
+      .download-popup__preview {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+      }
+      .download-popup__top-gradient {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 147px;
+        background: linear-gradient(180deg, #fff 0%, rgba(255, 255, 255, 0) 100%);
+        pointer-events: none;
+        z-index: 1;
+      }
+      .expression-headline {
+        position: absolute;
+        left: 50%;
+        top: calc(24px + env(safe-area-inset-top));
+        transform: translateX(-50%);
+        margin: 0;
+        width: min(230px, calc(100% - 72px));
+        color: #000;
+        font-size: clamp(32px, 10vw, 40px);
+        font-weight: 700;
+        line-height: normal;
+        text-align: center;
+        text-transform: uppercase;
+        z-index: 2;
+        pointer-events: none;
+      }
+      .download-popup__actions {
+        position: absolute;
+        left: 50%;
+        bottom: calc(76px + env(safe-area-inset-bottom));
+        transform: translateX(-50%);
+        z-index: 3;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        width: min(307px, calc(100% - 68px));
+      }
+      .download-popup__actions .btn-figma-download {
+        max-width: none;
+      }
+      .experience-capturing .ui-layer {
+        visibility: hidden;
+        pointer-events: none;
+      }
+      .variant-btn {
+        position: relative;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        overflow: hidden;
+      }
+      .variant-btn.selected {
+        width: 64px;
+        height: 64px;
+      }
+      .variant-btn .ring {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: none;
+      }
+      .variant-btn.selected .ring { display: block; }
+      .variant-btn .thumb {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 49px;
+        height: 49px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+      .variant-btn.selected .thumb {
+        width: 56px;
+        height: 56px;
+      }
+      .variant-btn:disabled {
+        cursor: wait;
+      }
+      .variant-spinner {
+        display: none;
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.45);
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+      }
+      .variant-btn.loading .variant-spinner {
+        display: flex;
+      }
+      .variant-spinner::after {
+        content: "";
+        width: 22px;
+        height: 22px;
+        border: 2px solid rgba(255, 255, 255, 0.35);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: variant-spin 0.7s linear infinite;
+      }
+      @keyframes variant-spin {
+        to { transform: rotate(360deg); }
+      }
+      #tooltip {
+        position: absolute;
+        left: 50%;
+        bottom: calc(88px + env(safe-area-inset-bottom));
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: calc(100% - 32px);
+      }
+      #tooltip[hidden] { display: none; }
+      #tooltip .bubble {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--red);
+        color: #fff;
+        border: 0;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 16px;
+        font-family: system-ui, sans-serif;
+        line-height: 1.35;
+        text-align: center;
+      }
+      #tooltip .bubble img {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+      }
+      #tooltip .arrow {
+        width: 24px;
+        height: 16px;
+        transform: rotate(180deg);
+      }
+      #genre-tabs {
+        position: absolute;
         left: 0;
         right: 0;
         bottom: 0;
-        z-index: 3;
         display: flex;
+        justify-content: center;
+        align-items: center;
         gap: 8px;
-        padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
-        overflow-x: auto;
-        background: linear-gradient(transparent, rgba(0, 0, 0, 0.65));
+        padding: 20px 16px calc(20px + env(safe-area-inset-bottom));
+        background: #000;
       }
-      #effects button {
-        flex: 0 0 auto;
-        border: 2px solid transparent;
-        border-radius: 999px;
-        padding: 10px 16px;
-        background: rgba(255, 255, 255, 0.16);
+      #genre-tabs[hidden] { display: none; }
+      .genre-tab {
+        height: 32px;
+        padding: 0 24px;
+        border: 0;
+        border-radius: 100px;
+        background: transparent;
         color: #fff;
-        font: inherit;
-        cursor: pointer;
+        font-size: 16px;
+        font-weight: 700;
+        text-transform: uppercase;
+        white-space: nowrap;
       }
-      #effects button.selected {
-        border-color: #fff;
-        background: rgba(255, 255, 255, 0.32);
+      .genre-tab.selected {
+        background: rgba(255, 255, 255, 0.24);
       }
     </style>
   </head>
   <body>
-    <div id="deepar-div"></div>
-    <div id="status">Membuka kamera…</div>
-    <div id="effects" hidden></div>
+    <section class="screen" id="landing">
+      <div class="hero-wrap">
+        <img class="hero" src="assets/ui/landing-hero.jpg" alt="" />
+      </div>
+      <div class="fade"></div>
+      <button class="start-btn" id="start-btn" type="button"><span>START</span></button>
+    </section>
+
+    <section class="screen" id="experience" hidden>
+      <div id="deepar-div"></div>
+      <div id="capture-countdown" hidden aria-live="assertive">
+        <span class="count" id="capture-count-num"></span>
+      </div>
+      <div id="status">Membuka kamera…</div>
+      <div class="ui-layer" id="ui-layer" hidden>
+        <div class="top-gradient"></div>
+        <div class="toolbar">
+          <button class="icon-btn" id="btn-flip" type="button" aria-label="Balik kamera">
+            <img src="assets/ui/flip.svg" alt="" />
+          </button>
+        </div>
+        <h1 class="headline">
+          <p class="line-1">YOUR PURSUIT TO</p>
+          <p class="line-2">BE THE ONE STARTS HERE</p>
+        </h1>
+        <img id="face-guide" src="assets/ui/garis.png" alt="" />
+        <p class="choose-label" id="choose-label" hidden>CHOOSE YOUR ONE</p>
+        <div id="variants" hidden></div>
+        <div id="tooltip">
+          <button class="bubble" id="tooltip-dismiss" type="button">
+            Tap here, choose your genre
+            <img src="assets/ui/close.svg" alt="" />
+          </button>
+          <img class="arrow" src="assets/ui/tooltip-arrow.svg" alt="" />
+        </div>
+        <div id="capture-panel" hidden>
+          <button id="btn-capture" class="btn-capture-figma" type="button">
+            <span class="capture-icon" aria-hidden="true">
+              <img
+                class="capture-icon-frame"
+                src="assets/ui/capture-icon-figma-b.svg"
+                width="20"
+                height="20"
+                alt=""
+              />
+              <img
+                class="capture-icon-dot"
+                src="assets/ui/capture-icon-figma-a.svg"
+                width="4"
+                height="4"
+                alt=""
+              />
+            </span>
+            CAPTURE
+          </button>
+        </div>
+        <div id="genre-tabs" hidden>
+          <button class="genre-tab" data-genre="indie" type="button">Indie</button>
+          <button class="genre-tab" data-genre="poppunk" type="button">Pop Punk</button>
+          <button class="genre-tab" data-genre="rnb" type="button">RNB</button>
+        </div>
+      </div>
+      <div id="download-popup" hidden>
+        <img id="capture-preview" class="download-popup__preview" alt="Hasil capture" />
+        <div class="download-popup__top-gradient" aria-hidden="true"></div>
+        <h2 class="expression-headline">
+          YOUR<br />ONE EXPRESSION
+        </h2>
+        <div class="download-popup__actions">
+          <button id="btn-popup-retake" class="btn-capture-figma" type="button">
+            <span class="capture-icon" aria-hidden="true">
+              <img
+                class="capture-icon-frame"
+                src="assets/ui/capture-icon-figma-b.svg"
+                width="20"
+                height="20"
+                alt=""
+              />
+              <img
+                class="capture-icon-dot"
+                src="assets/ui/capture-icon-figma-a.svg"
+                width="4"
+                height="4"
+                alt=""
+              />
+            </span>
+            CAPTURE
+          </button>
+          <p class="capture-or">OR</p>
+          <button id="btn-download-popup" class="btn-figma-download" type="button">
+            <img src="assets/ui/download-icon-figma.svg" width="24" height="24" alt="" />
+            <span>download</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
     <script>
-      const LICENSE_KEY = "f04ba3230fac85530313e56514c8a92815e3fde763861688a2e4daf63b62a6d832cb4bbe2b575788";
-      const CDN = "https://cdn.jsdelivr.net/npm/deepar@5.6.22/effects/";
-      const effects = [
-        { src: "indie_1.deepar", label: "Indie 1" },
-        { src: "Untitled.deepar", label: "Kacamata" },
-        { src: CDN + "aviators", label: "Aviators" }
-      ];
+      const LICENSE_KEY = "c6b7960392f450591698aeff6312f19386650d91c7385a4a2f97f6b62343c2f73ff6f012af5d9fbf";
+      const genres = {
+        indie: {
+          label: "Indie",
+          effects: ["indie1.deepar", "indie2.deepar", "indie3.deepar"],
+          thumbs: [
+            "assets/ui/thumbs/indie-1.png",
+            "assets/ui/thumbs/indie-2.png",
+            "assets/ui/thumbs/indie-3.png"
+          ]
+        },
+        poppunk: {
+          label: "Pop Punk",
+          effects: ["poppunk1.deepar", "poppunk2.deepar", "poppunk3.deepar"],
+          thumbs: [
+            "assets/ui/thumbs/poppunk-1.png",
+            "assets/ui/thumbs/poppunk-2.png",
+            "assets/ui/thumbs/poppunk-3.png"
+          ]
+        },
+        rnb: {
+          label: "RNB",
+          effects: ["rnb1.deepar", "rnb2.deepar", "rnb3.deepar"],
+          thumbs: [
+            "assets/ui/thumbs/rnb-1.png",
+            "assets/ui/thumbs/rnb-2.png",
+            "assets/ui/thumbs/rnb-3.png"
+          ]
+        }
+      };
 
+      const landingEl = document.getElementById("landing");
+      const experienceEl = document.getElementById("experience");
+      const deeparDiv = document.getElementById("deepar-div");
       const statusEl = document.getElementById("status");
-      const effectsEl = document.getElementById("effects");
+      const uiLayer = document.getElementById("ui-layer");
+      const faceGuide = document.getElementById("face-guide");
+      const chooseLabel = document.getElementById("choose-label");
+      const variantsEl = document.getElementById("variants");
+      const genreTabs = document.getElementById("genre-tabs");
+      const tooltip = document.getElementById("tooltip");
+      const capturePanel = document.getElementById("capture-panel");
+      const downloadPopup = document.getElementById("download-popup");
+      const capturePreview = document.getElementById("capture-preview");
+      const captureCountdown = document.getElementById("capture-countdown");
+      const captureCountNum = document.getElementById("capture-count-num");
 
-      (async function () {
-        let deepAR;
+      let deepAR = null;
+      let capturedDataUrl = null;
+      let activeGenre = null;
+      let activeVariant = 0;
+      let cameraFacing = "user";
+      let switchingCamera = false;
+      let switchingEffect = false;
+
+      async function startFacingCamera(facing) {
+        const options = {
+          mirror: facing === "user",
+          mediaStreamConstraints: {
+            audio: false,
+            video: { facingMode: { ideal: facing } }
+          }
+        };
+        try {
+          await deepAR.startCamera(options);
+        } catch (error) {
+          await deepAR.startCamera({
+            mirror: facing === "user",
+            mediaStreamConstraints: {
+              audio: false,
+              video: { facingMode: { exact: facing } }
+            }
+          });
+        }
+        cameraFacing = facing;
+      }
+
+      async function flipCamera() {
+        if (!deepAR || switchingCamera) return;
+        switchingCamera = true;
+        const nextFacing = cameraFacing === "user" ? "environment" : "user";
+        try {
+          deepAR.stopCamera();
+          await startFacingCamera(nextFacing);
+        } catch (error) {
+          console.error(error);
+          try {
+            deepAR.stopCamera();
+            await startFacingCamera(cameraFacing);
+          } catch (retryError) {
+            console.error(retryError);
+          }
+        } finally {
+          switchingCamera = false;
+        }
+      }
+
+      function setTooltipVisible(visible) {
+        tooltip.hidden = !visible;
+      }
+
+      function setVariantLoading(button, loading) {
+        variantsEl.querySelectorAll(".variant-btn").forEach((el) => {
+          el.disabled = loading;
+          if (loading) {
+            el.classList.toggle("loading", el === button);
+          } else {
+            el.classList.remove("loading");
+          }
+        });
+      }
+
+      async function applyEffect(effect, button) {
+        if (!deepAR || switchingEffect) return;
+        switchingEffect = true;
+        setVariantLoading(button, true);
+        try {
+          await deepAR.switchEffect(effect);
+        } catch (error) {
+          console.error(error);
+        } finally {
+          switchingEffect = false;
+          setVariantLoading(null, false);
+        }
+      }
+
+      function renderVariants(genreKey) {
+        const genre = genres[genreKey];
+        variantsEl.innerHTML = "";
+        genre.effects.forEach((effect, index) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "variant-btn" + (index === activeVariant ? " selected" : "");
+          button.innerHTML =
+            '<img class="ring" src="assets/ui/ring.svg" alt="" />' +
+            '<img class="thumb" src="' + genre.thumbs[index] + '" alt="Look ' + (index + 1) + '" />' +
+            '<span class="variant-spinner" aria-hidden="true"></span>';
+          button.addEventListener("click", async () => {
+            if (activeVariant === index || switchingEffect) return;
+            activeVariant = index;
+            variantsEl.querySelectorAll(".variant-btn").forEach((el) => el.classList.remove("selected"));
+            button.classList.add("selected");
+            await applyEffect(effect, button);
+          });
+          variantsEl.appendChild(button);
+        });
+      }
+
+      function showCaptureActions(visible) {
+        capturePanel.hidden = !visible;
+        uiLayer.classList.toggle("with-capture", visible);
+      }
+
+      function setCapturingMode(active) {
+        experienceEl.classList.toggle("experience-capturing", active);
+      }
+
+      function openDownloadPopup(dataUrl) {
+        capturedDataUrl = dataUrl;
+        capturePreview.src = dataUrl;
+        deeparDiv.style.visibility = "hidden";
+        downloadPopup.hidden = false;
+      }
+
+      function closeDownloadPopup() {
+        downloadPopup.hidden = true;
+        capturePreview.removeAttribute("src");
+        capturedDataUrl = null;
+        deeparDiv.style.visibility = "";
+        setCapturingMode(false);
+      }
+
+      function saveCapturedImage() {
+        if (!capturedDataUrl) return;
+        const link = document.createElement("a");
+        link.href = capturedDataUrl;
+        link.download = "amild-one-" + Date.now() + ".png";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      }
+
+      function waitMs(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+      }
+
+      async function runCaptureCountdown() {
+        captureCountdown.hidden = false;
+        for (const value of [3, 2, 1]) {
+          captureCountNum.textContent = String(value);
+          captureCountNum.style.animation = "none";
+          void captureCountNum.offsetWidth;
+          captureCountNum.style.animation = "";
+          await waitMs(1000);
+        }
+        captureCountdown.hidden = true;
+        captureCountNum.textContent = "";
+      }
+
+      async function capturePhoto() {
+        if (!deepAR || typeof deepAR.takeScreenshot !== "function") return;
+        const captureBtn = document.getElementById("btn-capture");
+        captureBtn.disabled = true;
+        setCapturingMode(true);
+        try {
+          await runCaptureCountdown();
+          const dataUrl = await deepAR.takeScreenshot();
+          openDownloadPopup(dataUrl);
+        } catch (error) {
+          console.error(error);
+          captureCountdown.hidden = true;
+          captureCountNum.textContent = "";
+          setCapturingMode(false);
+        } finally {
+          captureBtn.disabled = false;
+        }
+      }
+
+      async function selectGenre(genreKey) {
+        if (activeGenre === genreKey && !switchingEffect) return;
+        activeGenre = genreKey;
+        activeVariant = 0;
+        faceGuide.hidden = true;
+        chooseLabel.hidden = false;
+        variantsEl.hidden = false;
+        showCaptureActions(true);
+        setTooltipVisible(false);
+        renderVariants(genreKey);
+        genreTabs.querySelectorAll(".genre-tab").forEach((tab) => {
+          tab.classList.toggle("selected", tab.dataset.genre === genreKey);
+        });
+        const firstButton = variantsEl.querySelector(".variant-btn");
+        await applyEffect(genres[genreKey].effects[0], firstButton);
+      }
+
+      genreTabs.querySelectorAll(".genre-tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          selectGenre(tab.dataset.genre);
+        });
+      });
+
+      document.getElementById("tooltip-dismiss").addEventListener("click", () => setTooltipVisible(false));
+
+      document.getElementById("btn-capture").addEventListener("click", capturePhoto);
+      document.getElementById("btn-download-popup").addEventListener("click", saveCapturedImage);
+      document.getElementById("btn-popup-retake").addEventListener("click", closeDownloadPopup);
+
+      document.getElementById("btn-flip").addEventListener("click", flipCamera);
+
+      document.getElementById("start-btn").addEventListener("click", async () => {
+        landingEl.hidden = true;
+        experienceEl.hidden = false;
         try {
           deepAR = await deepar.initialize({
             licenseKey: LICENSE_KEY,
-            previewElement: document.getElementById("deepar-div"),
-            effect: effects[0].src
+            previewElement: document.getElementById("deepar-div")
           });
         } catch (error) {
           console.error(error);
-          statusEl.textContent = "Kamera atau license ditolak. Pastikan situs dibuka lewat HTTPS, domain-nya terdaftar di DeepAR, lalu izinkan kamera.";
+          statusEl.textContent =
+            "Kamera atau license ditolak. Pastikan situs dibuka lewat HTTPS, domain terdaftar di DeepAR, lalu izinkan kamera.";
           return;
         }
 
         statusEl.hidden = true;
-        effectsEl.hidden = false;
-
-        effects.forEach((effect, index) => {
-          const button = document.createElement("button");
-          button.type = "button";
-          button.textContent = effect.label;
-          if (index === 0) button.classList.add("selected");
-          button.addEventListener("click", async () => {
-            effectsEl.querySelectorAll("button").forEach((item) => item.classList.remove("selected"));
-            button.classList.add("selected");
-            await deepAR.switchEffect(effect.src);
-          });
-          effectsEl.appendChild(button);
-        });
-      })();
+        uiLayer.hidden = false;
+        genreTabs.hidden = false;
+        setTooltipVisible(true);
+      });
     </script>
   </body>
 </html>
